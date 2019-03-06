@@ -24,12 +24,12 @@ genRec c ((Identifier a):xs) = genRec s xs
 genRec c ((Invocation f a):xs) = genRec s xs
   where
     s = c ++ (genJs [f]) ++ "(" ++ args ++ ")"
-    args = intercalate ", " $ map (\x -> genJs [x]) a
+    args = intercalate "," $ (\x -> genJs [x]) <$> a
 
 genRec c ((Lambda a b):xs) = genRec s xs
   where
     s = "(function(" ++ csargs ++ "){" ++ body ++ "})"
-    csargs = intercalate "," $ a |> map unwrappedIdent
+    csargs = intercalate "," $ unwrappedIdent <$> a
     body = genTopLevel b
 
 genRec c (Ignore:xs) = genRec c xs
