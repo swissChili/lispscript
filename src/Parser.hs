@@ -23,10 +23,34 @@ spaceSepIdents = do
 
 remainingSpacedIdents = many $ whitespaces >> ident
 
+binaryFn a pa pb b = do
+  char '('
+  whitespacesOpt
+  string a
+  whitespaces
+  parta <- pa
+  whitespaces
+  partb <- pb
+  whitespacesOpt
+  char ')'
+  return $ b parta partb
+
+letFn = binaryFn "let" ident topLevelP Binding
+setFn = binaryFn "set" ident topLevelP Assignment
+
+opFn a = binaryFn a topLevelP topLevelP $ Operator a
+
+addFn = opFn"+"
+subFn = opFn "-"
+multFn = opFn "*"
+divFn = opFn "/"
+
 invocation = do
   char '('
+  whitespacesOpt
   func <- topLevelP
   args <- many $ whitespaces >> topLevelP
+  whitespacesOpt
   char ')'
   return $ Invocation func args
 
@@ -61,7 +85,21 @@ end = do
   many1 $ oneOf " \t\n\r"
   return Ignore
 
-topLevelP = try invocation
+comment = do
+  char ';'
+  many $ noneOf "\n"
+  char '\n'
+  return Ignore
+
+
+topLevelP = try comment
+        <|> try letFn
+        <|> try setFn
+        <|> try addFn
+        <|> try subFn
+        <|> try multFn
+        <|> try divFn
+        <|> try invocation
         <|> try lambda
         <|> try intLit
         <|> try strLit

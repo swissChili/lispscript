@@ -32,6 +32,18 @@ genRec c ((Lambda a b):xs) = genRec s xs
     csargs = intercalate "," $ unwrappedIdent <$> a
     body = genTopLevel b
 
+genRec c ((Binding k v):xs) = genRec s xs
+  where
+    s = c ++ "var " ++ unwrappedIdent k ++ "=" ++ genJs [v]
+
+genRec c ((Assignment k v):xs) = genRec s xs
+  where
+    s = c ++ unwrappedIdent k ++ "=" ++ genJs [v]
+
+genRec c ((Operator o a b):xs) = genRec s xs
+  where
+    s = c ++ "(" ++ genJs [a] ++ o ++ genJs [b] ++ ")"
+
 genRec c (Ignore:xs) = genRec c xs
 
 genRec c (End:xs) = genRec s xs

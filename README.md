@@ -6,11 +6,14 @@ similar to most Lisp-like languages, with some small diferences to make it
 more modern and work better when compiled to JS.
 
 ```clj
-([a] : {
-  (console.log a)
-} "hey")
-```
-Compiles to:
-```js
-(function(a){(console.log)((a))})("hey")
+(let fs (require "fs"))
+
+; Define a function `foo`
+(let foo [] : {
+  (let file (fs.readFileSync "README.md" "utf-8"))
+  (console.log (+ "README\n\n" file))
+})
+
+(foo)
+
 ```
