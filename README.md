@@ -9,11 +9,10 @@ more modern and work better when compiled to JS.
 (let fs (require "fs"))
 
 ; Define a function `foo`
-(let foo [] : {
-  (let file (fs.readFileSync "README.md" "utf-8"))
-  (console.log (+ "README\n\n" file))
-})
+(let foo [a] => (do
+  (let file (fs.readFileSync a "utf-8"))
+  (console.log (+ (+ a "\n\n") file))
+))
 
-(foo)
-
+(foo "hello.lss")
 ```

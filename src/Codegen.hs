@@ -30,7 +30,7 @@ genRec c ((Lambda a b):xs) = genRec s xs
   where
     s = "(function(" ++ csargs ++ "){" ++ body ++ "})"
     csargs = intercalate "," $ unwrappedIdent <$> a
-    body = genTopLevel b
+    body = genJs [b]
 
 genRec c ((Binding k v):xs) = genRec s xs
   where
@@ -48,6 +48,10 @@ genRec c (Ignore:xs) = genRec c xs
 
 genRec c (End:xs) = genRec s xs
   where s = c ++ ";\n"
+
+genRec c ((DoBlock b):xs) = genRec s xs
+  where
+    s = c ++ genTopLevel b
 
 genJs = genRec ""
 

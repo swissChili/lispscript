@@ -23,6 +23,16 @@ spaceSepIdents = do
 
 remainingSpacedIdents = many $ whitespaces >> ident
 
+sizeableFn a pa b = do
+  char '('
+  whitespacesOpt
+  string a
+  whitespaces
+  vals <- many1 $ pa
+  whitespacesOpt
+  char ')'
+  return $ b vals
+
 binaryFn a pa pb b = do
   char '('
   whitespacesOpt
@@ -44,6 +54,8 @@ addFn = opFn"+"
 subFn = opFn "-"
 multFn = opFn "*"
 divFn = opFn "/"
+
+doBlock = sizeableFn "do" topLevelP DoBlock
 
 invocation = do
   char '('
@@ -74,11 +86,9 @@ lambda = do
   args <- optionalSpaceSepIdents
   char ']'
   whitespacesOpt
-  char ':'
+  string "=>"
   whitespacesOpt
-  char '{'
-  body <- top
-  char '}'
+  body <- topLevelP
   return $ Lambda args body
 
 end = do
@@ -101,6 +111,7 @@ topLevelP = try comment
         <|> try divFn
         <|> try invocation
         <|> try lambda
+        <|> try doBlock
         <|> try intLit
         <|> try strLit
         <|> try ident
