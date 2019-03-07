@@ -10,7 +10,11 @@ data Lisp = Invocation Lisp [Lisp]
           | Binding Lisp Lisp
           | Assignment Lisp Lisp
           | Operator String [Lisp]
+          | IfStatement Lisp Lisp Lisp
           | Array [Lisp]
+          | Return Lisp
           | Ignore
+          | BoolTrue
+          | BoolFalse
           | End
             deriving (Show)

@@ -45,8 +45,19 @@ binaryFn a pa pb b = do
   char ')'
   return $ b parta partb
 
+unaryFn a pa b = do
+  char '('
+  whitespacesOpt
+  string a
+  whitespaces
+  parta <- pa
+  whitespacesOpt
+  char ')'
+  return $ b parta
+
 letFn = binaryFn "let" ident topLevelP Binding
 setFn = binaryFn "set" ident topLevelP Assignment
+retFn = unaryFn "return" topLevelP Return
 
 opFn a = sizeableFn a topLevelP $ Operator a
 
@@ -54,6 +65,10 @@ addFn = opFn "+"
 subFn = opFn "-"
 multFn = opFn "*"
 divFn = opFn "/"
+eqFn = opFn "=="
+tsEqFn = opFn "==="
+neqFn = opFn "!="
+tsNeqFn = opFn "!=="
 
 doBlock = sizeableFn "do" topLevelP DoBlock
 
@@ -77,6 +92,23 @@ method = do
   whitespacesOpt
   char ')'
   return $ Method object call args
+
+ifFunc = do
+  char '('
+  whitespacesOpt
+  string "if"
+  whitespaces
+  clause <- topLevelP
+  whitespaces
+  true <- topLevelP
+  false <- option Ignore wsT
+  whitespacesOpt
+  char ')'
+  return $ IfStatement clause true false
+  where 
+    wsT = do
+      whitespaces
+      topLevelP
 
 strLit = do
   char '"'
@@ -125,14 +157,31 @@ array = do
   char ']'
   return $ Array items
 
+false = do
+  string "false"
+  return $ Identifier "false"
+
+true = do
+  string "true"
+  return $ Identifier "true"
+
+-- lord amightly thats a lotta tries
 topLevelP = try comment
+        <|> try false
+        <|> try true
         <|> try letFn
         <|> try setFn
         <|> try addFn
         <|> try subFn
         <|> try multFn
         <|> try divFn
+        <|> try eqFn
+        <|> try neqFn
+        <|> try tsEqFn
+        <|> try tsNeqFn
         <|> try doBlock
+        <|> try retFn
+        <|> try ifFunc
         <|> try method
         <|> try invocation
         <|> try lambda

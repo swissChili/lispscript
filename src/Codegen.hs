@@ -23,7 +23,7 @@ genRec c ((Identifier a):xs) = genRec s xs
 
 genRec c ((Invocation f a):xs) = genRec s xs
   where
-    s = c ++ genJs [f] ++ "(" ++ args ++ ")"
+    s = c ++ "(" ++ genJs [f] ++ "(" ++ args ++ "))"
     args = intercalate "," $ a |> map \x -> genJs [x]
 
 genRec c ((Method obj call a):xs) = genRec s xs
@@ -55,14 +55,21 @@ genRec c (Ignore:xs) = genRec c xs
 genRec c ((Array a):xs) = genRec s xs
   where
     s = c ++ "[" ++ csitems ++ "]"
-    csitems = intercalate "," $ a |> map \x -> genJs [x]
+    csitems = intercalate "," $ genJs . pure <$> a
 
 genRec c (End:xs) = genRec s xs
   where s = c ++ ";\n"
 
+genRec c ((IfStatement clause a b):xs) = genRec s xs
+  where
+    s = c ++ "(" ++ genJs [clause] ++ ")?" ++ genJs [a] ++ " : " ++ genJs [b]
+
 genRec c ((DoBlock b):xs) = genRec s xs
   where
     s = c ++ "{" ++ genTopLevel b ++ "}"
+
+genRec c ((Return r):xs) = genRec s xs
+  where s = c ++ "return " ++ genJs [r] ++ ";"
 
 genJs = genRec ""
 
