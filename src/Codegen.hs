@@ -13,7 +13,7 @@ unwrappedIdent _ = ""
 genRec :: String -> [Lisp] -> String
 genRec c [] = c
 genRec c ((StringLit a):xs) = genRec s xs
-  where s = c ++ "\"" ++ a ++ "\""
+  where s = c ++ "(\"" ++ a ++ "\")"
 
 genRec c ((IntLit a):xs) = genRec s xs
   where s = c ++ show a
@@ -23,12 +23,17 @@ genRec c ((Identifier a):xs) = genRec s xs
 
 genRec c ((Invocation f a):xs) = genRec s xs
   where
-    s = c ++ (genJs [f]) ++ "(" ++ args ++ ")"
-    args = intercalate "," $ (\x -> genJs [x]) <$> a
+    s = c ++ genJs [f] ++ "(" ++ args ++ ")"
+    args = intercalate "," $ a |> map \x -> genJs [x]
+
+genRec c ((Method obj call a):xs) = genRec s xs
+  where
+    s = c ++ genJs [obj] ++ "." ++ unwrappedIdent call ++ "(" ++ args ++ ")"
+    args = intercalate "," $ a |> map \x -> genJs [x]
 
 genRec c ((Lambda a b):xs) = genRec s xs
   where
-    s = "(function(" ++ csargs ++ "){" ++ body ++ "})"
+    s = "((" ++ csargs ++ ")=>" ++ body ++ ")"
     csargs = intercalate "," $ unwrappedIdent <$> a
     body = genJs [b]
 
@@ -46,12 +51,17 @@ genRec c ((Operator o a b):xs) = genRec s xs
 
 genRec c (Ignore:xs) = genRec c xs
 
+genRec c ((Array a):xs) = genRec s xs
+  where
+    s = c ++ "[" ++ csitems ++ "]"
+    csitems = intercalate "," $ a |> map \x -> genJs [x]
+
 genRec c (End:xs) = genRec s xs
   where s = c ++ ";\n"
 
 genRec c ((DoBlock b):xs) = genRec s xs
   where
-    s = c ++ genTopLevel b
+    s = c ++ "{" ++ genTopLevel b ++ "}"
 
 genJs = genRec ""
 

@@ -1,9 +1,6 @@
 (let fs (require "fs"))
 
 ; Define a function `foo`
-(let foo [a] => (do
-  (let file (fs.readFileSync a "utf-8"))
-  (console.log (+ (+ a "\n\n") file))
-))
+(let printFile [a] => (.log console (.readFileSync fs a "utf-8")))
 
-(foo "hello.lss")
+(printFile "hello.lss")

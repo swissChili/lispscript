@@ -8,7 +8,7 @@ import Monads
 
 main :: IO ()
 main = do
-  s <- readFile "hello.ls"
+  s <- readFile "hello.lss"
   case lispParser s of
     Right a -> genTopLevel a |> putStrLn
     Left a -> print a

@@ -12,16 +12,16 @@ ident = do
            <|> oneOf "$_."
   return $ Identifier i
 
-remainingSpacedIdents :: GenParser Char st [Lisp]
-optionalSpaceSepIdents = option [] spaceSepIdents
+-- Praise be verbosity
+optionalspaceSep t = option [] $ spaceSep t
 
-spaceSepIdents = do
-  first <- ident
-  next <- remainingSpacedIdents
+spaceSep t = do
+  first <- t
+  next <- remainingSpaceSep t
   return ( first : next )
 
 
-remainingSpacedIdents = many $ whitespaces >> ident
+remainingSpaceSep t = many $ whitespaces >> t
 
 sizeableFn a pa b = do
   char '('
@@ -66,10 +66,28 @@ invocation = do
   char ')'
   return $ Invocation func args
 
+method = do
+  char '('
+  whitespacesOpt
+  char '.'
+  call <- ident
+  whitespaces
+  object <- topLevelP
+  args <- many $ whitespaces >> topLevelP
+  whitespacesOpt
+  char ')'
+  return $ Method object call args
+
 strLit = do
   char '"'
   content <- many $ noneOf ['"', '\n']
   char '"'
+  return $ StringLit content
+
+singleQuotedLit = do
+  char '\''
+  content <- many $ noneOf "'\n"
+  char '\''
   return $ StringLit content
 
 intLit = do
@@ -77,13 +95,10 @@ intLit = do
   return $ IntLit d
   where toi = read :: String -> Int
 
--- [a b]: { (+ a b) }
--- equivelant of a `do` block in most fp languages
--- but with the added benefit of args
 lambda = do
   whitespacesOpt
   char '['
-  args <- optionalSpaceSepIdents
+  args <- optionalspaceSep ident
   char ']'
   whitespacesOpt
   string "=>"
@@ -101,6 +116,14 @@ comment = do
   char '\n'
   return Ignore
 
+array = do
+  whitespacesOpt
+  char '['
+  whitespacesOpt
+  items <- optionalspaceSep topLevelP
+  whitespacesOpt
+  char ']'
+  return $ Array items
 
 topLevelP = try comment
         <|> try letFn
@@ -109,11 +132,14 @@ topLevelP = try comment
         <|> try subFn
         <|> try multFn
         <|> try divFn
+        <|> try doBlock
+        <|> try method
         <|> try invocation
         <|> try lambda
-        <|> try doBlock
+        <|> try array
         <|> try intLit
         <|> try strLit
+        <|> try singleQuotedLit
         <|> try ident
         <|> try end
 
