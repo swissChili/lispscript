@@ -9,7 +9,7 @@ data Lisp = Invocation Lisp [Lisp]
           | Lambda [Lisp] Lisp
           | Binding Lisp Lisp
           | Assignment Lisp Lisp
-          | Operator String Lisp Lisp
+          | Operator String [Lisp]
           | Array [Lisp]
           | Ignore
           | End

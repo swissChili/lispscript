@@ -48,9 +48,9 @@ binaryFn a pa pb b = do
 letFn = binaryFn "let" ident topLevelP Binding
 setFn = binaryFn "set" ident topLevelP Assignment
 
-opFn a = binaryFn a topLevelP topLevelP $ Operator a
+opFn a = sizeableFn a topLevelP $ Operator a
 
-addFn = opFn"+"
+addFn = opFn "+"
 subFn = opFn "-"
 multFn = opFn "*"
 divFn = opFn "/"

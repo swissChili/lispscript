@@ -45,9 +45,10 @@ genRec c ((Assignment k v):xs) = genRec s xs
   where
     s = c ++ unwrappedIdent k ++ "=" ++ genJs [v]
 
-genRec c ((Operator o a b):xs) = genRec s xs
+genRec c ((Operator o a):xs) = genRec s xs
   where
-    s = c ++ "(" ++ genJs [a] ++ o ++ genJs [b] ++ ")"
+    s = c ++ "(" ++ items ++ ")"
+    items = intercalate o $ genJs . pure <$> filter notIgnore a
 
 genRec c (Ignore:xs) = genRec c xs
 

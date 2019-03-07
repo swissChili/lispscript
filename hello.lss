@@ -3,4 +3,4 @@
 ; Define a function `foo`
 (let printFile [a] => (.log console (.readFileSync fs a "utf-8")))
 
-(printFile "hello.lss")
+(printFile (+ "hello" ".lss"))

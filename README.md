@@ -11,7 +11,7 @@ more modern and work better when compiled to JS.
 ; Define a function `foo`
 (let foo [a] => (do
   (let file (fs.readFileSync a "utf-8"))
-  (console.log (+ (+ a "\n\n") file))
+  (console.log (+ a "\n\n" file))
 ))
 
 (foo "hello.lss")
