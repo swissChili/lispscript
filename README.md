@@ -1,5 +1,7 @@
 # lispscript
 
+![Circle CI](https://img.shields.io/circleci/project/github/swissChili/lispscript.svg)
+
 Lispscript is a lisp dialect that compiles to JavaScript. It is written in
 Haskell and uses the Parsec library of parser combinators. It's syntax is
 similar to most Lisp-like languages, with some small diferences to make it

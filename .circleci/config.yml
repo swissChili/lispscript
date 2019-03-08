@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: haskell:latest
+
+    steps:
+      - checkout
+
+      - run:
+          name: Build Program
+          command: stack build
+      - run:
+          name: Test Program
+          command: stack test
