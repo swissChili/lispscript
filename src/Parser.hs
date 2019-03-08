@@ -81,6 +81,17 @@ invocation = do
   char ')'
   return $ Invocation func args
 
+constructor = do
+  char '('
+  whitespacesOpt
+  string "new"
+  whitespaces
+  object <- topLevelP
+  args <- many $ whitespaces >> topLevelP
+  whitespacesOpt
+  char ')'
+  return $ Constructor object args
+
 method = do
   char '('
   whitespacesOpt
@@ -167,6 +178,7 @@ true = do
 
 -- lord amightly thats a lotta tries
 topLevelP = try comment
+        <|> try constructor
         <|> try false
         <|> try true
         <|> try letFn

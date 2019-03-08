@@ -10,6 +10,7 @@ data Lisp = Invocation Lisp [Lisp]
           | Binding Lisp Lisp
           | Assignment Lisp Lisp
           | Operator String [Lisp]
+          | Constructor Lisp [Lisp]
           | IfStatement Lisp Lisp Lisp
           | Array [Lisp]
           | Return Lisp

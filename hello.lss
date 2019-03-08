@@ -1,6 +1,12 @@
 (let fs (require "fs"))
 
 ; Define a function `foo`
-(let printFile [a] => (.log console (.readFileSync fs a "utf-8")))
+(let printFile [a] => (.log console a "\n\n" (.readFileSync fs a "utf-8")))
 
-(printFile (+ "hello" ".lss"))
+(let files (new Array))
+(.push files "hello.lss")
+(.push files "factorial.lss")
+
+(.forEach files [f] => (do
+  (printFile f)
+))

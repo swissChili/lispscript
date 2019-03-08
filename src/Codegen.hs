@@ -26,6 +26,11 @@ genRec c ((Invocation f a):xs) = genRec s xs
     s = c ++ "(" ++ genJs [f] ++ "(" ++ args ++ "))"
     args = intercalate "," $ a |> map \x -> genJs [x]
 
+genRec c ((Constructor o a):xs) = genRec s xs
+  where
+    s = c ++ "(new " ++ genJs [o] ++ "(" ++ args ++ "))"
+    args = intercalate "," $ genJs . pure <$> a
+
 genRec c ((Method obj call a):xs) = genRec s xs
   where
     s = c ++ genJs [obj] ++ "." ++ unwrappedIdent call ++ "(" ++ args ++ ")"
