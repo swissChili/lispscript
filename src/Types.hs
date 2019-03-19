@@ -11,6 +11,10 @@ data Lisp = Invocation Lisp [Lisp]
           | Assignment Lisp Lisp
           | Operator String [Lisp]
           | Constructor Lisp [Lisp]
+          | KeyValPair Lisp Lisp
+          | Object [Lisp]
+          | ObjIndex Lisp Lisp
+          | ObjIndexVar Lisp Lisp
           | IfStatement Lisp Lisp Lisp
           | Array [Lisp]
           | Return Lisp

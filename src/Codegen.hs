@@ -69,6 +69,23 @@ genRec c ((IfStatement clause a b):xs) = genRec s xs
   where
     s = c ++ "(" ++ genJs [clause] ++ ")?" ++ genJs [a] ++ " : " ++ genJs [b]
 
+genRec c ((KeyValPair key val):xs) = genRec s xs
+  where
+    s = c ++ unwrappedIdent key ++ ":" ++ genJs [val]
+
+genRec c ((Object items):xs) = genRec s xs
+  where
+    s = c ++ "{" ++ cs ++ "}"
+    cs = intercalate ", " $ genJs . pure <$> items
+
+genRec c ((ObjIndex k obj):xs) = genRec s xs
+  where
+    s = c ++ genJs [obj] ++ "." ++ unwrappedIdent k
+
+genRec c ((ObjIndexVar k obj):xs) = genRec s xs
+  where
+    s = c ++ genJs [obj] ++ "[" ++ genJs [k] ++ "]"
+
 genRec c ((DoBlock b):xs) = genRec s xs
   where
     s = c ++ "{" ++ genTopLevel b ++ "}"

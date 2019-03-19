@@ -168,6 +168,43 @@ array = do
   char ']'
   return $ Array items
 
+keyValObjPairs = do
+  char ':'
+  key <- ident
+  whitespaces
+  val <- topLevelP
+  return $ KeyValPair key val
+
+object = do
+  char '['
+  whitespacesOpt
+  items <- optionalspaceSep keyValObjPairs
+  whitespacesOpt
+  char ']'
+  return $ Object items
+
+objIndex = do
+  char '('
+  whitespacesOpt
+  char ':'
+  key <- ident
+  whitespaces
+  obj <- topLevelP
+  whitespacesOpt
+  char ')'
+  return $ ObjIndex key obj
+
+objIndexVar = do
+  char '('
+  whitespacesOpt
+  string ":["
+  key <- topLevelP
+  char ']'
+  whitespaces
+  obj <- topLevelP
+  char ')'
+  return $ ObjIndexVar key obj
+
 false = do
   string "false"
   return $ Identifier "false"
@@ -195,6 +232,9 @@ topLevelP = try comment
         <|> try retFn
         <|> try ifFunc
         <|> try method
+        <|> try object
+        <|> try objIndex
+        <|> try objIndexVar
         <|> try invocation
         <|> try lambda
         <|> try array
