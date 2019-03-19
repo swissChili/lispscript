@@ -39,6 +39,8 @@ JavaScript. They are listed bellow:
   other Lisps. Useful for chaining multiple statements together. Often
   paired with a lambda.
 
+### Lambdas
+
 Lambdas are one of the exceptions to the s-expression syntax.
 
 ```clj
@@ -60,3 +62,18 @@ Would be written like so:
 However, Lispscript also supports using both the object and the method in the
 invocation as a shorthand. However the polish notation method is recommended
 since it alows one to call methods on anonymous objects.
+
+### Objects
+
+Objects in lispscript are fairly similar to other lisp dialects, and quite
+different from Javascript. Objects are defined with square braces and indexed
+with the usual S-expressions. 
+```clj
+(set foo "last value")
+(set obj
+  [ :key "val"
+    :anotherKey 123
+    :yetAnotherKey foo ])
+(.log console (:key obj))
+;=> val
+```
