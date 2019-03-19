@@ -69,8 +69,8 @@ Objects in lispscript are fairly similar to other lisp dialects, and quite
 different from Javascript. Objects are defined with square braces and indexed
 with the usual S-expressions. 
 ```clj
-(set foo "last value")
-(set obj
+(let foo "last value")
+(let obj
   [ :key "val"
     :anotherKey 123
     :yetAnotherKey foo ])
