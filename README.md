@@ -19,6 +19,19 @@ more modern and work better when compiled to JS.
 (foo "hello.lss")
 ```
 
+## installation
+
+Either build from source using the haskell stack or install a binary from
+the releases page.
+
+```sh
+$ stack install
+Copied executables to /home/user/.local/bin:
+- lsc
+$ lsc hello.lss | node
+Hello, World!
+```
+
 ## syntax
 
 Lispscript uses s-expressions for almost everything (with the exception

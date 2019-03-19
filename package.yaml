@@ -27,7 +27,7 @@ library:
   source-dirs: src
 
 executables:
-  lispscript-exe:
+  lsc:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
